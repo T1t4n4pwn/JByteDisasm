@@ -30,6 +30,12 @@
     <ClCompile Include="JByteDisasm\class\method.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="JByteDisasm\class\field.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="JByteDisasm\class\attribute.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JByteDisasm\class\class_file.hpp">
@@ -45,6 +51,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="JByteDisasm\class\method.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="JByteDisasm\class\field.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="JByteDisasm\class\attribute.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

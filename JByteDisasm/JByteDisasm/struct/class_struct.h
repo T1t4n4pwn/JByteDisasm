@@ -38,28 +38,100 @@ enum CP_CONST_TYPE : char
 
 typedef struct
 {
-	uint16_t attribute_name_index;
-	uint32_t attribute_length;
-	std::vector<uint8_t> bytes;
-}attribute_info_t;
+	uint16_t length;
+	std::string bytes;
+}cp_utf8_info_t;
 
 typedef struct
 {
-	uint16_t access_flags;
-	uint16_t name_index;
-	uint16_t descript_index;
-	uint16_t attribute_count;
-	attribute_info_t attributes[1];
-}field_info_t;
+	uint32_t value;
+}cp_integer_info_t;
 
 typedef struct
 {
-	uint16_t access_flags;
+	uint32_t value;
+}cp_float_info_t;
+
+typedef struct
+{
+	uint32_t high_value;
+	uint32_t low_value;
+}cp_long_info_t;
+
+typedef struct
+{
+	uint32_t high_value;
+	uint32_t low_value;
+}cp_double_info_t;
+
+typedef struct
+{
 	uint16_t name_index;
-	uint16_t descript_index;
-	uint16_t attribute_count;
-	attribute_info_t attributes[1];
-}method_info_t;
+}cp_class_info_t;
+
+typedef struct
+{
+	uint16_t string_index;
+}cp_string_info_t;
+
+typedef struct
+{
+	uint16_t class_index;
+	uint16_t name_and_type_index;
+}cp_fieldref_info_t;
+
+typedef struct
+{
+	uint16_t class_index;
+	uint16_t name_and_type_index;
+}cp_methodref_info_t;
+
+typedef struct
+{
+	uint16_t class_index;
+	uint16_t name_and_type_index;
+}cp_interface_methodref_info_t;
+
+typedef struct
+{
+	uint16_t name_index;
+	uint16_t descriptor_index;
+}cp_nameandtype_info_t;
+
+typedef struct
+{
+	uint8_t reference_kind;
+	uint16_t reference_index;
+}cp_methodhandle_info_t;
+
+typedef struct
+{
+	uint16_t descriptor_index;
+}cp_methodtype_info_t;
+
+typedef struct
+{
+	uint16_t bootstrap_method_attr_index;
+	uint16_t name_and_type_index;
+}cp_invokedynamic_info_t;
+
+//typedef struct
+//{
+//	uint16_t access_flags;
+//	uint16_t name_index;
+//	uint16_t descript_index;
+//	uint16_t attribute_count;
+//	attribute_info_t attributes[1];
+//}field_info_t;
+
+//typedef struct
+//{
+//	uint16_t access_flags;
+//	uint16_t name_index;
+//	uint16_t descript_index;
+//	uint16_t attribute_count;
+//	attribute_info_t attributes[1];
+//}method_info_t;
 
 //typedef struct
 //{

@@ -121,7 +121,7 @@ int main()
 		std::cout << info.utf8_info.bytes << std::endl;
 	}
 
-	method_info_t
+	
 
 	system("pause");
 	return 0;

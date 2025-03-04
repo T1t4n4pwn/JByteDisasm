@@ -8,85 +8,6 @@
 
 typedef struct
 {
-	uint16_t length;
-	std::string bytes;
-}cp_utf8_info_t;
-
-typedef struct
-{
-	uint32_t value;
-}cp_integer_info_t;
-
-typedef struct
-{
-	uint32_t value;
-}cp_float_info_t;
-
-typedef struct
-{
-	uint32_t high_value;
-	uint32_t low_value;
-}cp_long_info_t;
-
-typedef struct
-{
-	uint32_t high_value;
-	uint32_t low_value;
-}cp_double_info_t;
-
-typedef struct
-{
-	uint16_t name_index;
-}cp_class_info_t;
-
-typedef struct
-{
-	uint16_t string_index;
-}cp_string_info_t;
-
-typedef struct
-{
-	uint16_t class_index;
-	uint16_t name_and_type_index;
-}cp_fieldref_info_t;
-
-typedef struct
-{
-	uint16_t class_index;
-	uint16_t name_and_type_index;
-}cp_methodref_info_t;
-
-typedef struct
-{
-	uint16_t class_index;
-	uint16_t name_and_type_index;
-}cp_interface_methodref_info_t;
-
-typedef struct
-{
-	uint16_t name_index;
-	uint16_t descriptor_index;
-}cp_nameandtype_info_t;
-
-typedef struct
-{
-	uint8_t reference_kind;
-	uint16_t reference_index;
-}cp_methodhandle_info_t;
-
-typedef struct
-{
-	uint16_t descriptor_index;
-}cp_methodtype_info_t;
-
-typedef struct
-{
-	uint16_t bootstrap_method_attr_index;
-	uint16_t name_and_type_index;
-}cp_invokedynamic_info_t;
-
-typedef struct
-{
 	int index;
 	CP_CONST_TYPE tag;
 
@@ -113,10 +34,11 @@ public:
 	constant_pool();
 	~constant_pool();
 
-	void init(const byte_buffer& constant_pool_buffer, size_t constant_count);
+	void init(byte_buffer* constant_pool_buffer, size_t constant_count);
 	bool parse();
 
 	cp_info_t get_cp_info(size_t i);
+	const std::vector<cp_info_t>& get_cp_infos();
 
 	size_t cp_count();
 	size_t cp_info_count();
@@ -126,7 +48,7 @@ private:
 	bool parse_constant_data(cp_info_t& info);
 
 private:
-	byte_buffer _buffer;
+	byte_buffer* _buffer;
 	size_t _cp_count;
 
 	std::vector<cp_info_t> _cp_infos;

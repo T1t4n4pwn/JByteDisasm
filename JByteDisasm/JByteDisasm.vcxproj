@@ -131,15 +131,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JByteDisasm\class\attribute.cpp" />
     <ClCompile Include="JByteDisasm\class\class_file.cpp" />
     <ClCompile Include="JByteDisasm\class\constant_pool.cpp" />
+    <ClCompile Include="JByteDisasm\class\field.cpp" />
     <ClCompile Include="JByteDisasm\class\method.cpp" />
     <ClCompile Include="JByteDisasm\utils\byte_buffer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JByteDisasm\class\attribute.hpp" />
     <ClInclude Include="JByteDisasm\class\class_file.hpp" />
     <ClInclude Include="JByteDisasm\class\constant_pool.hpp" />
+    <ClInclude Include="JByteDisasm\class\field.hpp" />
     <ClInclude Include="JByteDisasm\class\method.hpp" />
     <ClInclude Include="JByteDisasm\struct\class_struct.h" />
     <ClInclude Include="JByteDisasm\utils\byte_buffer.hpp" />
