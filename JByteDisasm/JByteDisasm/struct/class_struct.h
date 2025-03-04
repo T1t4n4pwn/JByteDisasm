@@ -20,6 +20,7 @@ enum ACCESS_FLAGS : uint16_t
 
 enum CP_CONST_TYPE : char
 {
+	CONSTANT_NONE = 0,
 	CONSTANT_Utf8 = 1,
 	CONSTANT_Integer = 3,
 	CONSTANT_Float = 4,

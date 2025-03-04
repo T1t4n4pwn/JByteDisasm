@@ -24,17 +24,18 @@ bool constant_pool::parse()
 {
 	_cp_infos.clear();
 
-	for (size_t i = 0; i < _cp_count - 1; i++)
+	size_t cp_cnt = _cp_count - 1;
+
+	for (size_t i = 0; i < cp_cnt; i++)
 	{
 		cp_info_t pool{};
 
 		if (!parse_constant_data(pool))
 		{
-			continue;
+			break;
 		}
 
 		_cp_infos.push_back(pool);
-
 	}
 
 	std::for_each(_cp_infos.begin(), _cp_infos.end(),
@@ -117,7 +118,7 @@ size_t constant_pool::cp_info_count()
 bool constant_pool::parse_constant_data(cp_info_t& info)
 {
 
-	CP_CONST_TYPE tag = (CP_CONST_TYPE)_buffer->read<char>();
+	CP_CONST_TYPE tag = (CP_CONST_TYPE)_buffer->read<unsigned char>();
 
 	info.tag = tag;
 	info.index = _cp_infos.size();
@@ -127,7 +128,7 @@ bool constant_pool::parse_constant_data(cp_info_t& info)
 	case CONSTANT_Utf8:
 	{
 		uint16_t length = _buffer->read<uint16_t>();
-		info.utf8_info.bytes.resize(length + 1);
+		info.utf8_info.bytes.resize(length);
 
 		_buffer->copy_buffer(&info.utf8_info.bytes[0], length);
 		break;
@@ -144,14 +145,16 @@ bool constant_pool::parse_constant_data(cp_info_t& info)
 	}
 	case CONSTANT_Long:
 	{
-		info.long_info.high_value = _buffer->read<uint32_t>();
 		info.long_info.low_value = _buffer->read<uint32_t>();
+		info.long_info.high_value = _buffer->read<uint32_t>();
+
 		break;
 	}
 	case CONSTANT_Double:
 	{
-		info.double_info.high_value = _buffer->read<uint32_t>();
 		info.double_info.low_value = _buffer->read<uint32_t>();
+		info.double_info.high_value = _buffer->read<uint32_t>();
+
 		break;
 	}
 	case CONSTANT_Class:
@@ -207,8 +210,14 @@ bool constant_pool::parse_constant_data(cp_info_t& info)
 	}
 	default:
 	{
+		_buffer->set_cur_pos(_buffer->get_cur_pos() - 1);
 		return false;
 	}
+	}
+
+	if (tag == CONSTANT_Long || tag == CONSTANT_Double)
+	{
+		_cp_infos.push_back(info);
 	}
 
 	return true;

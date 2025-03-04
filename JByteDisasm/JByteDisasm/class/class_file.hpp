@@ -16,6 +16,10 @@ public:
 	bool is_valid();
 
 	constant_pool& cp_pool();
+	std::vector<field> get_fields();
+	std::vector<field>& get_fields_ref();
+	std::vector<method> get_methods();
+	std::vector<method>& get_methods_ref();
 
 private:
 

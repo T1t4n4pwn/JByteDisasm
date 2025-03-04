@@ -75,7 +75,7 @@ public:
 	}
 
 	template <typename T>
-	T big_endian(T data)
+	static T big_endian(T data)
 	{
 
 		to_big_endian(&data, sizeof(T));
@@ -89,7 +89,7 @@ public:
 	void copy_buffer_current(void* buffer, size_t size);
 
 
-	void to_big_endian(void* data, size_t bytes_count);
+	static void to_big_endian(void* data, size_t bytes_count);
 
 	size_t get_cur_pos();
 	void set_cur_pos(size_t pos);

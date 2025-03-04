@@ -75,9 +75,29 @@ constant_pool& class_file::cp_pool()
 	return _constant_pool;
 }
 
+std::vector<field> class_file::get_fields()
+{
+	return _fields;
+}
+
+std::vector<field>& class_file::get_fields_ref()
+{
+	return _fields;
+}
+
+std::vector<method> class_file::get_methods()
+{
+	return _methods;
+}
+
+std::vector<method>& class_file::get_methods_ref()
+{
+	return _methods;
+}
+
 void class_file::parse_fields()
 {
-	auto cp_infos = _constant_pool.get_cp_infos();
+	auto& cp_infos = _constant_pool.get_cp_infos();
 
 	for (size_t i = 0; i < _field_count; i++)
 	{
@@ -111,7 +131,7 @@ void class_file::parse_fields()
 
 void class_file::parse_methods()
 {
-	auto cp_infos = _constant_pool.get_cp_infos();
+	auto& cp_infos = _constant_pool.get_cp_infos();
 
 	for (size_t i = 0; i < _method_count; i++)
 	{
@@ -142,7 +162,7 @@ void class_file::parse_methods()
 
 void class_file::parse_attributes()
 {
-	auto cp_infos = _constant_pool.get_cp_infos();
+	auto& cp_infos = _constant_pool.get_cp_infos();
 
 	for (size_t i = 0; i < _attribute_count; i++)
 	{
