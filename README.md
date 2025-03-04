@@ -32,6 +32,4 @@ parse methods supported:
 </br>
 
 ### Decode Bytecodes
-</br>
-
 #### Work In Prograss
