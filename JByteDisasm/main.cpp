@@ -130,6 +130,8 @@ int main()
 		return -1;
 	}
 
+	printf("SourceFile: %s\n", klass.get_sourcefile_name().c_str());
+
 	auto methods = klass.get_methods();
 
 	for (auto& me : methods)
@@ -149,7 +151,7 @@ int main()
 			printf("%02X ", bytecodes[i]);
 		}
 
-		printf("\n\n\n\n");
+		printf("\n");
 
 	}
 

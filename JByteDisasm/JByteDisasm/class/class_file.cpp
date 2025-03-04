@@ -42,6 +42,8 @@ bool class_file::parse()
 		return false;
 	}
 
+	_cp_infos = _constant_pool.get_cp_infos();
+
 	_access_flags = _buffer.read<uint16_t>();
 	_this_class_index = _buffer.read<uint16_t>();
 	_super_class_index = _buffer.read<uint16_t>();
@@ -95,9 +97,38 @@ std::vector<method>& class_file::get_methods_ref()
 	return _methods;
 }
 
+std::string class_file::get_sourcefile_name()
+{
+	if (!_has_sourcefile_attr)
+	{
+		return "";
+	}
+
+	return _cp_infos[_attr_sourcefile.sourcefile_index - 1].utf8_info.bytes;
+}
+
+bool class_file::has_innerclass_attr()
+{
+	return _has_innerclass_attr;
+}
+
+attribute_innerclass_t class_file::attr_innerclass()
+{
+	return _attr_innerclass;
+}
+
+bool class_file::has_bootstrap_methods()
+{
+	return _has_bootstrap_method_attr;
+}
+
+attribute_bootstrap_methods_t class_file::attr_bootstrap_methods()
+{
+	return _attr_bootstrap_methods;
+}
+
 void class_file::parse_fields()
 {
-	auto& cp_infos = _constant_pool.get_cp_infos();
 
 	for (size_t i = 0; i < _field_count; i++)
 	{
@@ -121,17 +152,16 @@ void class_file::parse_fields()
 
 
 
-			info.attributes.push_back(attribute(cp_infos, attri));
+			info.attributes.push_back(attribute(_cp_infos, attri));
 		}
 
-		_fields.push_back(field(cp_infos, info));
+		_fields.push_back(field(_cp_infos, info));
 	}
 
 }
 
 void class_file::parse_methods()
 {
-	auto& cp_infos = _constant_pool.get_cp_infos();
 
 	for (size_t i = 0; i < _method_count; i++)
 	{
@@ -153,16 +183,15 @@ void class_file::parse_methods()
 
 			_buffer.copy_buffer(&attri.bytes[0], attri.attribute_length);
 
-			info.attributes.push_back(attribute(cp_infos, attri));
+			info.attributes.push_back(attribute(_cp_infos, attri));
 		}
 
-		_methods.push_back(method(cp_infos, info));
+		_methods.push_back(method(_cp_infos, info));
 	}
 }
 
 void class_file::parse_attributes()
 {
-	auto& cp_infos = _constant_pool.get_cp_infos();
 
 	for (size_t i = 0; i < _attribute_count; i++)
 	{
@@ -175,6 +204,34 @@ void class_file::parse_attributes()
 
 		_buffer.copy_buffer(&attri.bytes[0], attri.attribute_length);
 
-		_attributes.push_back(attribute(cp_infos, attri));
+		_attributes.push_back(attribute(_cp_infos, attri));
+	}
+
+	for (auto& attr : _attributes)
+	{
+		if (attr.get_attribute_name() == "SourceFile")
+		{
+			auto attr_data = attr.get_attribute_data();
+			_attr_sourcefile.from_binary(attr_data);
+
+			_has_sourcefile_attr = true;
+		}
+
+		if (attr.get_attribute_name() == "InnerClasses")
+		{
+			auto attr_data = attr.get_attribute_data();
+			_attr_innerclass.from_binary(attr_data);
+
+			_has_innerclass_attr = true;
+		}
+
+		if (attr.get_attribute_name() == "BootstrapMethods")
+		{
+			auto attr_data = attr.get_attribute_data();
+			_attr_bootstrap_methods.from_binary(attr_data);
+
+			_has_bootstrap_method_attr = true;
+		}
+
 	}
 }
