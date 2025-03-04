@@ -149,6 +149,44 @@ typedef struct attribute_local_variable
 
 }attribute_local_variable_t;
 
+typedef struct local_vartype_table
+{
+	uint16_t start_pc;
+	uint16_t length;
+	uint16_t name_index;
+	uint16_t signature_index;
+	uint16_t index;
+}local_vartype_table_t;
+
+typedef struct attribute_local_vartype
+{
+	uint16_t local_variable_type_table_length;
+	std::vector<local_vartype_table_t> local_vartype_tables;
+
+	void from_binary(const std::vector<uint8_t>& data)
+	{
+		byte_buffer buffer = data;
+		buffer.set_endian(1);
+
+		local_variable_type_table_length = buffer.read<uint16_t>();
+
+		for (size_t i = 0; i < local_variable_type_table_length; i++)
+		{
+			local_vartype_table_t vartype{};
+
+			vartype.start_pc = buffer.read<uint16_t>();
+			vartype.length = buffer.read<uint16_t>();
+			vartype.name_index = buffer.read<uint16_t>();
+			vartype.signature_index = buffer.read<uint16_t>();
+			vartype.index = buffer.read<uint16_t>();
+
+			local_vartype_tables.push_back(vartype);
+		}
+
+	}
+
+}attribute_local_vartype_t;
+
 class method
 {
 public:
@@ -163,10 +201,12 @@ public:
 	bool has_code_attr();
 	bool has_line_number_attr();
 	bool has_local_variable_attr();
+	bool has_local_vartype_attr();
 
 	attribute_code_t attribute_code();
 	attribute_line_number_t attribute_line_number();
 	attribute_local_variable_t attribute_local_variable();
+	attribute_local_vartype_t attribute_local_vartype();
 
 	std::vector<uint8_t> get_byte_code();
 	std::vector<uint8_t>& get_byte_code_ref();
@@ -191,5 +231,8 @@ private:
 
 	bool _has_local_variable_attr = false;
 	attribute_local_variable_t _attr_local_variable;
+
+	bool _has_local_vartype_attr = false;
+	attribute_local_vartype_t _attr_local_vartype;
 
 };

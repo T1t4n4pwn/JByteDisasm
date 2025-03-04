@@ -47,6 +47,14 @@ method::method(const std::vector<cp_info_t>& cp_infos, method_info_t method_info
 			_has_local_variable_attr = true;
 		}
 
+		if (attr.get_attribute_name() == "LocalVariableTypeTable")
+		{
+			auto attr_data = attr.get_attribute_data();
+			_attr_local_vartype.from_binary(attr_data);
+
+			_has_local_vartype_attr = true;
+		}
+
 	}
 
 }
@@ -86,6 +94,11 @@ bool method::has_local_variable_attr()
 	return _has_local_variable_attr;
 }
 
+bool method::has_local_vartype_attr()
+{
+	return _has_local_vartype_attr;
+}
+
 attribute_code_t method::attribute_code()
 {
 	return _attr_code;
@@ -99,6 +112,11 @@ attribute_line_number_t method::attribute_line_number()
 attribute_local_variable_t method::attribute_local_variable()
 {
 	return _attr_local_variable;
+}
+
+attribute_local_vartype_t method::attribute_local_vartype()
+{
+	return _attr_local_vartype;
 }
 
 std::vector<uint8_t> method::get_byte_code()

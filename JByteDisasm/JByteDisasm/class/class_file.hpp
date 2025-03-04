@@ -112,9 +112,9 @@ public:
 	std::string get_sourcefile_name();
 
 	bool has_innerclass_attr();
-	attribute_innerclass_t attr_innerclass();
-
 	bool has_bootstrap_methods();
+
+	attribute_innerclass_t attr_innerclass();
 	attribute_bootstrap_methods_t attr_bootstrap_methods();
 
 private:

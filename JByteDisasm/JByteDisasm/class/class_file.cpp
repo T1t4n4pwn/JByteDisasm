@@ -112,14 +112,14 @@ bool class_file::has_innerclass_attr()
 	return _has_innerclass_attr;
 }
 
-attribute_innerclass_t class_file::attr_innerclass()
-{
-	return _attr_innerclass;
-}
-
 bool class_file::has_bootstrap_methods()
 {
 	return _has_bootstrap_method_attr;
+}
+
+attribute_innerclass_t class_file::attr_innerclass()
+{
+	return _attr_innerclass;
 }
 
 attribute_bootstrap_methods_t class_file::attr_bootstrap_methods()
