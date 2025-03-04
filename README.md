@@ -33,4 +33,5 @@ parse methods supported:
 
 ### Decode Bytecodes
 </br>
-#### WIP
+
+#### Work In Prograss
