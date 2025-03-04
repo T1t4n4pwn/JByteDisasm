@@ -31,6 +31,6 @@ parse methods supported:
           Code,  LineNumberTable, LocalVariableTable, LocalVariableTypeTable
 </br>
 
-### decode bytecode
+### Decode Bytecodes
 </br>
-  #### WIP
+#### WIP
