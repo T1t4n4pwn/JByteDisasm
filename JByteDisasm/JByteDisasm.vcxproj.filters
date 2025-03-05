@@ -36,6 +36,12 @@
     <ClCompile Include="JByteDisasm\class\attribute.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="JByteDisasm\decoder\decoder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="JByteDisasm\decoder\opcode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JByteDisasm\class\class_file.hpp">
@@ -57,6 +63,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="JByteDisasm\class\attribute.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="JByteDisasm\decoder\opcode.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="JByteDisasm\decoder\decoder.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

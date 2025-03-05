@@ -210,6 +210,8 @@ public:
 
 	std::vector<uint8_t> get_byte_code();
 	std::vector<uint8_t>& get_byte_code_ref();
+
+	const std::vector<cp_info_t>& cp_infos();
 	
 	bool is_public();
 	bool is_protected();

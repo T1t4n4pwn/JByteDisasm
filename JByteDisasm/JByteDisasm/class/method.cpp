@@ -129,6 +129,11 @@ std::vector<uint8_t>& method::get_byte_code_ref()
 	return _attr_code.code;
 }
 
+const std::vector<cp_info_t>& method::cp_infos()
+{
+	return _cp_infos;
+}
+
 bool method::is_public()
 {
 	return _method_info.access_flags & ACCESS_FLAGS::ACC_PUBLIC;
