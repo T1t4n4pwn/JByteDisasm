@@ -31,51 +31,7 @@ typedef struct attribute_code
 	uint16_t attribute_count;
 	std::vector<attribute> attributes;
 
-	void from_binary(const std::vector<uint8_t>& data, const std::vector<cp_info_t>& cp_infos)
-	{
-		byte_buffer buffer = data;
-		buffer.set_endian(1);
-
-		max_stack = buffer.read<uint16_t>();
-		max_locals = buffer.read<uint16_t>();
-
-		code_length = buffer.read<uint32_t>();
-		
-		code.resize(code_length);
-
-		buffer.copy_buffer(&code[0], code_length);
-		
-		exception_table_length = buffer.read<uint16_t>();
-		for (size_t i = 0; i < exception_table_length; i++)
-		{
-			exception_table_t except_table{};
-			except_table.start_pc = buffer.read<uint16_t>();
-			except_table.end_pc = buffer.read<uint16_t>();
-			except_table.handler_pc = buffer.read<uint16_t>();
-			except_table.catch_type = buffer.read<uint16_t>();
-
-			exception_tables.push_back(except_table);
-		}
-
-		attribute_count = buffer.read<uint16_t>();
-
-		for (size_t i = 0; i < attribute_count; i++)
-		{
-			attribute_info_t info;
-
-			info.attribute_name_index = buffer.read<uint16_t>();
-			info.attribute_length = buffer.read<uint32_t>();
-			
-			info.bytes.resize(info.attribute_length);
-
-			buffer.copy_buffer(&info.bytes[0], info.attribute_length);
-
-			attribute attri(cp_infos, info);
-			
-			attributes.push_back(attri);
-		}
-
-	}
+	void from_binary(const std::vector<uint8_t>& data, const constant_pool& cp);
 
 }attribute_code_t;
 
@@ -90,24 +46,7 @@ typedef struct attribute_line_number
 	uint16_t line_number_table_length;
 	std::vector<line_number_table_t> line_number_tables;
 
-	void from_binary(const std::vector<uint8_t>& data)
-	{
-		byte_buffer buffer = data;
-		buffer.set_endian(1);
-
-		line_number_table_length = buffer.read<uint16_t>();
-
-		for (size_t i = 0; i < line_number_table_length; i++)
-		{
-			line_number_table_t line{};
-
-			line.start_pc = buffer.read<uint16_t>();
-			line.line_number = buffer.read<uint16_t>();
-			
-			line_number_tables.push_back(line);
-		}
-
-	}
+	void from_binary(const std::vector<uint8_t>& data);
 
 }attribute_line_number_t;
 
@@ -125,27 +64,7 @@ typedef struct attribute_local_variable
 	uint16_t local_variable_length;
 	std::vector<local_variable_t> local_variable_tables;
 
-	void from_binary(const std::vector<uint8_t>& data)
-	{
-		byte_buffer buffer = data;
-		buffer.set_endian(1);
-
-		local_variable_length = buffer.read<uint16_t>();
-
-		for (size_t i = 0; i < local_variable_length; i++)
-		{
-			local_variable var{ 0 };
-
-			var.start_pc = buffer.read<uint16_t>();
-			var.length = buffer.read<uint16_t>();
-			var.name_index = buffer.read<uint16_t>();
-			var.descriptor_index = buffer.read<uint16_t>();
-			var.index = buffer.read<uint16_t>();
-
-			local_variable_tables.push_back(var);
-		}
-
-	}
+	void from_binary(const std::vector<uint8_t>& data);
 
 }attribute_local_variable_t;
 
@@ -163,27 +82,7 @@ typedef struct attribute_local_vartype
 	uint16_t local_variable_type_table_length;
 	std::vector<local_vartype_table_t> local_vartype_tables;
 
-	void from_binary(const std::vector<uint8_t>& data)
-	{
-		byte_buffer buffer = data;
-		buffer.set_endian(1);
-
-		local_variable_type_table_length = buffer.read<uint16_t>();
-
-		for (size_t i = 0; i < local_variable_type_table_length; i++)
-		{
-			local_vartype_table_t vartype{};
-
-			vartype.start_pc = buffer.read<uint16_t>();
-			vartype.length = buffer.read<uint16_t>();
-			vartype.name_index = buffer.read<uint16_t>();
-			vartype.signature_index = buffer.read<uint16_t>();
-			vartype.index = buffer.read<uint16_t>();
-
-			local_vartype_tables.push_back(vartype);
-		}
-
-	}
+	void from_binary(const std::vector<uint8_t>& data);
 
 }attribute_local_vartype_t;
 
@@ -191,7 +90,7 @@ class method
 {
 public:
 
-	method(const std::vector<cp_info_t>& cp_infos, method_info_t method_info);
+	method(const constant_pool& cp_infos, method_info_t method_info);
 	~method();
 
 	method_info_t method_info();
@@ -211,7 +110,7 @@ public:
 	std::vector<uint8_t> get_byte_code();
 	std::vector<uint8_t>& get_byte_code_ref();
 
-	const std::vector<cp_info_t>& cp_infos();
+	const constant_pool& cp();
 	
 	bool is_public();
 	bool is_protected();
@@ -222,7 +121,7 @@ public:
 
 private:
 
-	const std::vector<cp_info_t>& _cp_infos;
+	const constant_pool& _cp;
 	method_info_t _method_info;
 
 	bool _has_code_attr = false;

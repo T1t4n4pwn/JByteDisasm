@@ -38,81 +38,135 @@ bool constant_pool::parse()
 		_cp_infos.push_back(pool);
 	}
 
-	std::for_each(_cp_infos.begin(), _cp_infos.end(),
-		[&](const cp_info_t& e)
-		{
-			switch (e.tag)
-			{
-			case CONSTANT_Utf8:
-				_cp_utf8_infos.push_back(e.utf8_info);
-				break;
-			case CONSTANT_Integer:
-				_cp_int_infos.push_back(e.int_info);
-				break;
-			case CONSTANT_Float:
-				_cp_float_infos.push_back(e.float_info);
-				break;
-			case CONSTANT_Long:
-				_cp_long_infos.push_back(e.long_info);
-				break;
-			case CONSTANT_Double:
-				_cp_double_infos.push_back(e.double_info);
-				break;
-			case CONSTANT_Class:
-				_cp_class_infos.push_back(e.class_info);
-				break;
-			case CONSTANT_String:
-				_cp_string_infos.push_back(e.string_info);
-				break;
-			case CONSTANT_Fieldref:
-				_cp_fieldref_infos.push_back(e.fieldref_info);
-				break;
-			case CONSTANT_Methodref:
-				_cp_methodref_infos.push_back(e.methodref_info);
-				break;
-			case CONSTANT_InterfaceMethodref:
-				_cp_interface_methodref_infos.push_back(e.interface_methodref_info);
-				break;
-			case CONSTANT_NameAndType:
-				_cp_name_and_type_infos.push_back(e.name_and_type_info);
-				break;
-			case CONSTANT_MethodHandle_info:
-				_cp_methodhandle_infos.push_back(e.method_handle_info);
-				break;
-			case CONSTANT_MethodType:
-				_cp_methodtype_infos.push_back(e.method_type_info);
-				break;
-			case CONSTANT_InvokeDynamic:
-				_cp_invokedynamic_infos.push_back(e.invokedynamic_info);
-				break;
-			default:
-				break;
-			}
-			
-		}
-	);
-
 	return true;
 }
 
-cp_info_t constant_pool::get_cp_info(size_t i)
+cp_info_t constant_pool::get_cp_info(size_t i) const
 {
 	return _cp_infos[i];
 }
 
-const std::vector<cp_info_t>& constant_pool::get_cp_infos()
+const std::vector<cp_info_t>& constant_pool::get_cp_infos() const
 {
 	return _cp_infos;
 }
 
-size_t constant_pool::cp_count()
+size_t constant_pool::cp_count() const
 {
 	return _cp_count;
 }
 
-size_t constant_pool::cp_info_count()
+size_t constant_pool::cp_info_count() const
 {
 	return _cp_infos.size();
+}
+
+std::string constant_pool::get_utf8_value(int index) const
+{
+	return get_utf8_info(index).bytes;
+}
+
+cp_utf8_info_t constant_pool::get_utf8_info(int index) const
+{
+	return _cp_infos[index].utf8_info;
+}
+
+int constant_pool::get_int_value(int index) const
+{
+	return get_int_info(index).value;
+}
+
+cp_integer_info_t constant_pool::get_int_info(int index) const
+{
+	return _cp_infos[index].int_info;
+}
+
+float constant_pool::get_float_value(int index) const
+{
+	uint32_t value = get_float_info(index).value;
+	return *(float*)&value;
+}
+
+cp_float_info_t constant_pool::get_float_info(int index) const
+{
+	return _cp_infos[index].float_info;
+}
+
+long long constant_pool::get_long_value(int index) const
+{
+	cp_long_info_t value = get_long_info(index);
+	return *(long long*)&value;
+}
+
+cp_long_info_t constant_pool::get_long_info(int index) const
+{
+	return _cp_infos[index].long_info;
+}
+
+double constant_pool::get_double_value(int index) const
+{
+	cp_double_info_t value = get_double_info(index);
+	return *(double*)&value;
+}
+
+cp_double_info_t constant_pool::get_double_info(int index) const
+{
+	return _cp_infos[index].double_info;
+}
+
+std::string constant_pool::get_class_value(int index) const
+{
+	return get_utf8_value(get_class_info(index).name_index - 1);
+}
+
+cp_class_info_t constant_pool::get_class_info(int index) const
+{
+	return _cp_infos[index].class_info;
+}
+
+std::string constant_pool::get_string_value(int index) const
+{
+	return get_utf8_value(get_string_info(index).string_index - 1);
+}
+
+cp_string_info_t constant_pool::get_string_info(int index) const
+{
+	return _cp_infos[index].string_info;
+}
+
+cp_fieldref_info_t constant_pool::get_fieldref_info(int index) const
+{
+	return _cp_infos[index].fieldref_info;
+}
+
+cp_methodref_info_t constant_pool::get_methodref_info(int index) const
+{
+	return _cp_infos[index].methodref_info;
+}
+
+cp_interface_methodref_info_t constant_pool::get_interface_methodref_info(int index) const
+{
+	return _cp_infos[index].interface_methodref_info;
+}
+
+cp_nameandtype_info_t constant_pool::get_nameandtype_info(int index) const
+{
+	return _cp_infos[index].name_and_type_info;
+}
+
+cp_methodhandle_info_t constant_pool::get_methodhandle_info(int index) const
+{
+	return _cp_infos[index].method_handle_info;
+}
+
+cp_methodtype_info_t constant_pool::get_methodtype_info(int index) const
+{
+	return _cp_infos[index].method_type_info;
+}
+
+cp_invokedynamic_info_t constant_pool::get_invokedynamic_info(int index) const
+{
+	return _cp_infos[index].invokedynamic_info;
 }
 
 bool constant_pool::parse_constant_data(cp_info_t& info)

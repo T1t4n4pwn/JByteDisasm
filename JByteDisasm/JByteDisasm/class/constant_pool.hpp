@@ -37,11 +37,40 @@ public:
 	void init(byte_buffer* constant_pool_buffer, size_t constant_count);
 	bool parse();
 
-	cp_info_t get_cp_info(size_t i);
-	const std::vector<cp_info_t>& get_cp_infos();
+	cp_info_t get_cp_info(size_t i) const;
+	const std::vector<cp_info_t>& get_cp_infos() const;
 
-	size_t cp_count();
-	size_t cp_info_count();
+	size_t cp_count() const;
+	size_t cp_info_count() const;
+
+	std::string get_utf8_value(int index) const;
+	cp_utf8_info_t get_utf8_info(int index) const;
+
+	int get_int_value(int index) const;
+	cp_integer_info_t get_int_info(int index) const;
+
+	float get_float_value(int index) const;
+	cp_float_info_t get_float_info(int index) const;
+
+	long long get_long_value(int index) const;
+	cp_long_info_t get_long_info(int index) const;
+
+	double get_double_value(int index) const;
+	cp_double_info_t get_double_info(int index) const;
+
+	std::string get_class_value(int index) const;
+	cp_class_info_t get_class_info(int index) const;
+
+	std::string get_string_value(int index) const;
+	cp_string_info_t get_string_info(int index) const;
+
+	cp_fieldref_info_t get_fieldref_info(int index) const;
+	cp_methodref_info_t get_methodref_info(int index) const;
+	cp_interface_methodref_info_t get_interface_methodref_info(int index) const;
+	cp_nameandtype_info_t get_nameandtype_info(int index) const;
+	cp_methodhandle_info_t get_methodhandle_info(int index) const;
+	cp_methodtype_info_t get_methodtype_info(int index) const;
+	cp_invokedynamic_info_t get_invokedynamic_info(int index) const;
 	
 private:
 	
@@ -52,20 +81,5 @@ private:
 	size_t _cp_count;
 
 	std::vector<cp_info_t> _cp_infos;
-
-	std::vector<cp_utf8_info_t> _cp_utf8_infos;
-	std::vector<cp_integer_info_t> _cp_int_infos;
-	std::vector<cp_float_info_t> _cp_float_infos;
-	std::vector<cp_long_info_t> _cp_long_infos;
-	std::vector<cp_double_info_t> _cp_double_infos;
-	std::vector<cp_class_info_t> _cp_class_infos;
-	std::vector<cp_string_info_t> _cp_string_infos;
-	std::vector<cp_fieldref_info_t> _cp_fieldref_infos;
-	std::vector<cp_methodref_info_t> _cp_methodref_infos;
-	std::vector<cp_interface_methodref_info_t> _cp_interface_methodref_infos;
-	std::vector<cp_nameandtype_info_t> _cp_name_and_type_infos;
-	std::vector<cp_methodhandle_info_t> _cp_methodhandle_infos;
-	std::vector<cp_methodtype_info_t> _cp_methodtype_infos;
-	std::vector<cp_invokedynamic_info_t> _cp_invokedynamic_infos;
 
 };

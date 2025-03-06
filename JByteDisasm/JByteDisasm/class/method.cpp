@@ -1,8 +1,8 @@
 #include "method.hpp"
 #include <algorithm>
 
-method::method(const std::vector<cp_info_t>& cp_infos, method_info_t method_info)
-	: _cp_infos(cp_infos), _method_info(method_info)
+method::method(const constant_pool& cp, method_info_t method_info)
+	: _cp(cp), _method_info(method_info)
 {
 	
 	if (method_info.attributes.empty())
@@ -15,7 +15,7 @@ method::method(const std::vector<cp_info_t>& cp_infos, method_info_t method_info
 		if (attr.get_attribute_name() == "Code")
 		{
 			auto attr_data = attr.get_attribute_data();
-			_attr_code.from_binary(attr_data, cp_infos);
+			_attr_code.from_binary(attr_data, cp);
 
 			_has_code_attr = true;
 
@@ -71,12 +71,12 @@ method_info_t method::method_info()
 
 std::string method::get_method_name()
 {
-	return _cp_infos[_method_info.name_index - 1].utf8_info.bytes;
+	return _cp.get_utf8_value(_method_info.name_index - 1);
 }
 
 std::string method::get_method_descript()
 {
-	return _cp_infos[_method_info.descript_index - 1].utf8_info.bytes;
+	return _cp.get_utf8_value(_method_info.descript_index - 1);
 }
 
 bool method::has_code_attr()
@@ -129,9 +129,9 @@ std::vector<uint8_t>& method::get_byte_code_ref()
 	return _attr_code.code;
 }
 
-const std::vector<cp_info_t>& method::cp_infos()
+const constant_pool& method::cp()
 {
-	return _cp_infos;
+	return _cp;
 }
 
 bool method::is_public()
@@ -162,4 +162,114 @@ bool method::is_final()
 bool method::is_interface()
 {
 	return _method_info.access_flags & ACCESS_FLAGS::ACC_INTERFACE;
+}
+
+
+void attribute_code::from_binary(const std::vector<uint8_t>& data, const constant_pool& cp)
+{
+	byte_buffer buffer = data;
+	buffer.set_endian(1);
+
+	max_stack = buffer.read<uint16_t>();
+	max_locals = buffer.read<uint16_t>();
+
+	code_length = buffer.read<uint32_t>();
+
+	code.resize(code_length);
+
+	buffer.copy_buffer(&code[0], code_length);
+
+	exception_table_length = buffer.read<uint16_t>();
+	for (size_t i = 0; i < exception_table_length; i++)
+	{
+		exception_table_t except_table{};
+		except_table.start_pc = buffer.read<uint16_t>();
+		except_table.end_pc = buffer.read<uint16_t>();
+		except_table.handler_pc = buffer.read<uint16_t>();
+		except_table.catch_type = buffer.read<uint16_t>();
+
+		exception_tables.push_back(except_table);
+	}
+
+	attribute_count = buffer.read<uint16_t>();
+
+	for (size_t i = 0; i < attribute_count; i++)
+	{
+		attribute_info_t info;
+
+		info.attribute_name_index = buffer.read<uint16_t>();
+		info.attribute_length = buffer.read<uint32_t>();
+
+		info.bytes.resize(info.attribute_length);
+
+		buffer.copy_buffer(&info.bytes[0], info.attribute_length);
+
+		attribute attri(cp, info);
+
+		attributes.push_back(attri);
+	}
+
+}
+
+void attribute_line_number::from_binary(const std::vector<uint8_t>& data)
+{
+	byte_buffer buffer = data;
+	buffer.set_endian(1);
+
+	line_number_table_length = buffer.read<uint16_t>();
+
+	for (size_t i = 0; i < line_number_table_length; i++)
+	{
+		line_number_table_t line{};
+
+		line.start_pc = buffer.read<uint16_t>();
+		line.line_number = buffer.read<uint16_t>();
+
+		line_number_tables.push_back(line);
+	}
+
+}
+
+void attribute_local_variable::from_binary(const std::vector<uint8_t>& data)
+{
+	byte_buffer buffer = data;
+	buffer.set_endian(1);
+
+	local_variable_length = buffer.read<uint16_t>();
+
+	for (size_t i = 0; i < local_variable_length; i++)
+	{
+		local_variable var{ 0 };
+
+		var.start_pc = buffer.read<uint16_t>();
+		var.length = buffer.read<uint16_t>();
+		var.name_index = buffer.read<uint16_t>();
+		var.descriptor_index = buffer.read<uint16_t>();
+		var.index = buffer.read<uint16_t>();
+
+		local_variable_tables.push_back(var);
+	}
+
+}
+
+void attribute_local_vartype::from_binary(const std::vector<uint8_t>& data)
+{
+	byte_buffer buffer = data;
+	buffer.set_endian(1);
+
+	local_variable_type_table_length = buffer.read<uint16_t>();
+
+	for (size_t i = 0; i < local_variable_type_table_length; i++)
+	{
+		local_vartype_table_t vartype{};
+
+		vartype.start_pc = buffer.read<uint16_t>();
+		vartype.length = buffer.read<uint16_t>();
+		vartype.name_index = buffer.read<uint16_t>();
+		vartype.signature_index = buffer.read<uint16_t>();
+		vartype.index = buffer.read<uint16_t>();
+
+		local_vartype_tables.push_back(vartype);
+	}
+
 }

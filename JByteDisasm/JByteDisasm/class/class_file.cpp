@@ -152,10 +152,10 @@ void class_file::parse_fields()
 
 
 
-			info.attributes.push_back(attribute(_cp_infos, attri));
+			info.attributes.push_back(attribute(_constant_pool, attri));
 		}
 
-		_fields.push_back(field(_cp_infos, info));
+		_fields.push_back(field(_constant_pool, info));
 	}
 
 }
@@ -183,10 +183,10 @@ void class_file::parse_methods()
 
 			_buffer.copy_buffer(&attri.bytes[0], attri.attribute_length);
 
-			info.attributes.push_back(attribute(_cp_infos, attri));
+			info.attributes.push_back(attribute(_constant_pool, attri));
 		}
 
-		_methods.push_back(method(_cp_infos, info));
+		_methods.push_back(method(_constant_pool, info));
 	}
 }
 
@@ -204,7 +204,7 @@ void class_file::parse_attributes()
 
 		_buffer.copy_buffer(&attri.bytes[0], attri.attribute_length);
 
-		_attributes.push_back(attribute(_cp_infos, attri));
+		_attributes.push_back(attribute(_constant_pool, attri));
 	}
 
 	for (auto& attr : _attributes)

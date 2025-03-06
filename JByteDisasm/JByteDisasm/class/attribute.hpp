@@ -14,7 +14,7 @@ typedef struct
 class attribute
 {
 public:
-	attribute(const std::vector<cp_info_t>& cp_infos, attribute_info_t info);
+	attribute(const constant_pool& cp, attribute_info_t info);
 	~attribute();
 
 	attribute_info_t attribute_info();
@@ -23,7 +23,7 @@ public:
 	std::vector<uint8_t> get_attribute_data();
 
 private:
-	const std::vector<cp_info_t>& _cp_infos;
+	const constant_pool& _cp;
 	attribute_info_t _attribute_info;
 
 };

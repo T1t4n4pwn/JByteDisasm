@@ -14,8 +14,9 @@ void decoder::setup(method* me)
 {
 	_method = me;
 	_code_bytes = me->get_byte_code();
-	_cp_infos = me->cp_infos();
+	_cp = &me->cp();
 	_buffer = _code_bytes;
+	_buffer.set_endian(1);
 }
 
 void decoder::process_ldc_opstr(char* opstr_buf, size_t size, const cp_info_t& cp)
@@ -35,13 +36,13 @@ void decoder::process_ldc_opstr(char* opstr_buf, size_t size, const cp_info_t& c
 	}
 	case CONSTANT_String:
 	{
-		std::string str = _cp_infos[cp.string_info.string_index - 1].utf8_info.bytes;
+		std::string str = _cp->get_utf8_value(cp.string_info.string_index - 1);
 		memcpy(opstr_buf, &str[0], str.length());
 		break;
 	}
 	case CONSTANT_Class:
 	{
-		std::string str = _cp_infos[cp.class_info.name_index - 1].utf8_info.bytes;
+		std::string str = _cp->get_utf8_value(cp.class_info.name_index - 1);
 		memcpy(opstr_buf, &str[0],  str.length());
 		break;
 	}
@@ -107,7 +108,7 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		cp_info_t cp = _cp_infos[op.index.index - 1];
+		cp_info_t cp = _cp->get_cp_info(op.index.index - 1);
 
 		process_ldc_opstr(opstr_buf, sizeof(opstr_buf), cp);
 
@@ -126,7 +127,7 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		cp_info_t cp = _cp_infos[op.index.index - 1];
+		cp_info_t cp = _cp->get_cp_info(op.index.index - 1);
 
 		process_ldc_opstr(opstr_buf, sizeof(opstr_buf), cp);
 
@@ -201,7 +202,7 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		sprintf_s(opstr_buf, sizeof(opstr_buf), "L%02X", op.offset.offset);
+		sprintf_s(opstr_buf, sizeof(opstr_buf), "L%X", op.offset.offset);
 
 		break;
 	}
@@ -323,7 +324,7 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		std::string str = _cp_infos[_cp_infos[op.multianewarray.index - 1].class_info.name_index - 1].utf8_info.bytes;
+		std::string str = _cp->get_class_value(op.multianewarray.index - 1);
 		memcpy(opstr_buf, &str[0], str.length());
 
 		break;
@@ -363,12 +364,13 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		cp_nameandtype_info_t name_and_type = _cp_infos[_cp_infos[op.index.index - 1].fieldref_info.name_and_type_index - 1].name_and_type_info;
+		cp_fieldref_info_t field_info = _cp->get_fieldref_info(op.index.index - 1);
+		cp_nameandtype_info_t name_and_type = _cp->get_nameandtype_info(field_info.name_and_type_index - 1);
 
-		std::string class_name = _cp_infos[_cp_infos[op.index.index - 1].fieldref_info.class_index - 1].utf8_info.bytes;
+		std::string class_name = _cp->get_class_value(field_info.class_index - 1);
 
-		std::string field_name = _cp_infos[name_and_type.name_index - 1].utf8_info.bytes;
-		std::string field_desc = _cp_infos[name_and_type.descriptor_index - 1].utf8_info.bytes;
+		std::string field_name = _cp->get_utf8_value(name_and_type.name_index - 1);
+		std::string field_desc = _cp->get_utf8_value(name_and_type.descriptor_index - 1);
 
 		std::string full_name = class_name + "." + field_name + " " + field_desc;
 
@@ -392,11 +394,12 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		cp_nameandtype_info_t name_and_type = _cp_infos[_cp_infos[op.index.index - 1].methodref_info.name_and_type_index - 1].name_and_type_info;
+		cp_methodref_info_t methodref_info = _cp->get_methodref_info(op.index.index - 1);
+		cp_nameandtype_info_t name_and_type = _cp->get_nameandtype_info(methodref_info.name_and_type_index - 1);
 
-		std::string class_name = _cp_infos[_cp_infos[op.index.index - 1].methodref_info.class_index - 1].utf8_info.bytes;
-		std::string method_name = _cp_infos[name_and_type.name_index - 1].utf8_info.bytes;
-		std::string method_desc = _cp_infos[name_and_type.descriptor_index - 1].utf8_info.bytes;
+		std::string class_name = _cp->get_class_value(methodref_info.class_index - 1);
+		std::string method_name = _cp->get_utf8_value(name_and_type.name_index - 1);
+		std::string method_desc = _cp->get_utf8_value(name_and_type.descriptor_index - 1);
 
 		std::string full_name = class_name + "." + method_name + " " + method_desc;
 
@@ -418,13 +421,13 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		cp_interface_methodref_info_t interface_info =  _cp_infos[op.invokeinterface.index - 1].interface_methodref_info;
+		cp_interface_methodref_info_t interface_info = _cp->get_interface_methodref_info(op.invokeinterface.index - 1);
 
-		cp_nameandtype_info_t name_and_type = _cp_infos[interface_info.name_and_type_index - 1].name_and_type_info;
+		cp_nameandtype_info_t name_and_type = _cp->get_nameandtype_info(interface_info.name_and_type_index - 1);
 
-		std::string class_name = _cp_infos[interface_info.class_index - 1].utf8_info.bytes;
-		std::string method_name = _cp_infos[name_and_type.name_index - 1].utf8_info.bytes;
-		std::string method_desc = _cp_infos[name_and_type.descriptor_index - 1].utf8_info.bytes;
+		std::string class_name = _cp->get_class_value(interface_info.class_index - 1);
+		std::string method_name = _cp->get_utf8_value(name_and_type.name_index - 1);
+		std::string method_desc = _cp->get_utf8_value(name_and_type.descriptor_index - 1);
 
 		std::string full_name = class_name + "." + method_name + " " + method_desc;
 
@@ -448,11 +451,11 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		cp_invokedynamic_info_t invoke_info = _cp_infos[op.index.index - 1].invokedynamic_info;
-		cp_nameandtype_info_t name_and_type = _cp_infos[invoke_info.name_and_type_index - 1].name_and_type_info;
+		cp_invokedynamic_info_t invoke_info = _cp->get_invokedynamic_info(op.index.index - 1);
+		cp_nameandtype_info_t name_and_type = _cp->get_nameandtype_info(invoke_info.name_and_type_index - 1);
 
-		std::string method_name = _cp_infos[name_and_type.name_index - 1].utf8_info.bytes;
-		std::string method_desc = _cp_infos[name_and_type.descriptor_index - 1].utf8_info.bytes;
+		std::string method_name = _cp->get_utf8_value(name_and_type.name_index - 1);
+		std::string method_desc = _cp->get_utf8_value(name_and_type.descriptor_index - 1);
 
 		std::string full_name = method_name + " " + method_desc;
 
@@ -476,7 +479,7 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		std::string class_name = _cp_infos[_cp_infos[op.index.index - 1].class_info.name_index - 1].utf8_info.bytes;
+		std::string class_name = _cp->get_class_value(op.index.index - 1);
 
 		memcpy(opstr_buf, &class_name[0], class_name.length());
 
@@ -546,11 +549,16 @@ size_t decoder::decode_all(std::vector<bytecode_info_t>& infos, bool is_skip_inv
 
 		insn.bytes[0] = opcode;
 
-		_buffer.set_cur_pos(before_cur_pos);
-		_buffer.copy_buffer_current(&insn.bytes[1], op_size);
-		_buffer.set_cur_pos(after_cur_pos);
+		if (after_cur_pos > before_cur_pos)
+		{
+			_buffer.set_cur_pos(before_cur_pos);
+			_buffer.copy_buffer_current(&insn.bytes[1], op_size);
+			_buffer.set_cur_pos(after_cur_pos);
+		}
 
 		infos.push_back(insn);
+
+		offset += insn.bytes.size();
 	}
 
 	return size_t();

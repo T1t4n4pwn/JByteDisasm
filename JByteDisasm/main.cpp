@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 #include "class/class_file.hpp"
+#include "decoder/decoder.hpp"
 
 unsigned char class_file_data[1824] = {
 	0xCA, 0xFE, 0xBA, 0xBE, 0x00, 0x00, 0x00, 0x3D, 0x00, 0x6C, 0x0A, 0x00, 0x02, 0x00, 0x03, 0x07,
@@ -139,67 +140,21 @@ int main()
 
 		printf("Method: %s\n", me.get_method_name().c_str());
 
-		auto bytecodes = me.get_byte_code();
+		decoder dec;
 
-		for (int i = 0; i < bytecodes.size(); i++)
+		dec.setup(&me);
+
+		std::vector<bytecode_info_t> insns;
+		dec.decode_all(insns);
+
+		for (const auto& e : insns)
 		{
-			if (i != 0 && i % 16 == 0)
-			{
-				printf("\n");
-			}
-
-			printf("%02X ", bytecodes[i]);
+			printf("%-10s\t\t%-20s\n", e.mnemonic_str.c_str(), e.op_str.c_str());
 		}
 
 		printf("\n");
 
 	}
-
-
-	//auto fields = klass.get_fields();
-
-	//for (size_t i = 0; i < fields.size(); i++)
-	//{
-	//	field& f = fields[i];
-	//	if (!f.is_final())
-	//	{
-	//		continue;
-	//	}
-
-	//	printf("FieldName: %s\n", f.get_field_name().c_str());
-
-	//	if (f.get_const_value_type() == CP_CONST_TYPE::CONSTANT_Integer)
-	//	{
-	//		int value = 0;
-	//		f.get_const_value<int>(&value);
-	//		printf("%X\n", value);
-	//	}
-
-	//	if (f.get_const_value_type() == CP_CONST_TYPE::CONSTANT_String)
-	//	{
-	//		std::string value;
-	//		f.get_const_value<std::string>(&value);
-
-
-	//		printf("%s\n", value.c_str());
-	//	}
-
-	//	if (f.get_const_value_type() == CP_CONST_TYPE::CONSTANT_Long)
-	//	{
-	//		long long value = 0;
-	//		f.get_const_value<long long>(&value);
-	//		printf("%016llX\n", value);
-	//	}
-
-	//	if (f.get_const_value_type() == CP_CONST_TYPE::CONSTANT_Double)
-	//	{
-	//		double value = 0;
-	//		f.get_const_value<double>(&value);
-	//		printf("%lf\n", value);
-	//	}
-
-	//}
-	//
 
 	system("pause");
 	return 0;

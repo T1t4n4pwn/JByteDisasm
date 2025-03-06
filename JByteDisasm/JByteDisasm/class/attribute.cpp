@@ -1,7 +1,7 @@
 #include "attribute.hpp"
 
-attribute::attribute(const std::vector<cp_info_t>& cp_infos, attribute_info_t info)
-	: _cp_infos(cp_infos), _attribute_info(info)
+attribute::attribute(const constant_pool& cp, attribute_info_t info)
+	: _cp(cp), _attribute_info(info)
 {
 
 }
@@ -18,7 +18,7 @@ attribute_info_t attribute::attribute_info()
 
 std::string attribute::get_attribute_name()
 {
-	return _cp_infos[_attribute_info.attribute_name_index - 1].utf8_info.bytes;
+	return _cp.get_utf8_value(_attribute_info.attribute_name_index - 1);
 }
 
 size_t attribute::get_attribute_length()

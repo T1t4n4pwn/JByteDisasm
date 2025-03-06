@@ -21,7 +21,7 @@ private:
 
 private:
 	std::vector<uint8_t> _code_bytes;
-	std::vector<cp_info_t> _cp_infos;
+	const constant_pool* _cp;
 	byte_buffer _buffer;
 	method* _method;
 };
