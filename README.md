@@ -32,4 +32,4 @@ JByteDisasm is a disassembly engine for Java bytecode.
 - [ ] AnnotationDefault
 
 ## Decode Bytecodes
-- [X] 
+- [X] Decoder
