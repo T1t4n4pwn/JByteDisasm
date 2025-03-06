@@ -61,6 +61,12 @@ void decoder::process_ldc_opstr(char* opstr_buf, size_t size, const cp_info_t& c
 	}
 }
 
+template<typename T>
+T calc_abs_offset(T current, T target, size_t insn_size)
+{
+	return current + target - insn_size;
+}
+
 void decoder::process_opcode_operands(bytecode_info_t& insn)
 {
 
@@ -202,13 +208,15 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 
 		insn.oprands.push_back(op);
 
-		sprintf_s(opstr_buf, sizeof(opstr_buf), "L%X", op.offset.offset);
+		uint16_t off = calc_abs_offset<uint16_t>(_buffer.get_cur_pos(), op.offset.offset, op.offset.bit_width / 8 + 1);
+
+		sprintf_s(opstr_buf, sizeof(opstr_buf), "L%X", off);
 
 		break;
 	}
 	case TABLESWITCH:
 	{
-		//TODO
+		//TODO FIX
 		insn.op_count = 1;
 		opcode_operand_t op{};
 
@@ -258,7 +266,7 @@ void decoder::process_opcode_operands(bytecode_info_t& insn)
 	}
 	case LOOKUPSWITCH:
 	{
-		//TODO
+		//TODO FIX
 		insn.op_count = 1;
 		opcode_operand_t op{};
 
